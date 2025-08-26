@@ -62,7 +62,7 @@ interface Credentials {
 }
 
 const BASE_URL =
-  'https://fantasy.espn.com/apis/v3/games/ffl/seasons';
+  'https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons' ;
 
 /**
  * Build headers with authentication cookies from environment variables.
