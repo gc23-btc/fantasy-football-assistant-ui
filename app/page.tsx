@@ -3,9 +3,10 @@
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Plus, Users, Trophy, Settings, LogOut, User } from "lucide-react";
+import { Plus, Users, Trophy, Settings, LogOut, User, TrendingUp } from "lucide-react";
 import { NotificationContainer } from "@/components/ui/Notification";
 import { useNotifications } from "@/hooks/useNotifications";
+import { QuickStatsModal } from "@/components/ui/QuickStatsModal";
 
 interface FantasyTeam {
   id: string;
@@ -22,6 +23,8 @@ export default function Dashboard() {
   const { data: session, status } = useSession();
   const [teams, setTeams] = useState<FantasyTeam[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTeam, setSelectedTeam] = useState<FantasyTeam | null>(null);
+  const [showStatsModal, setShowStatsModal] = useState(false);
   const { notifications, removeNotification, showSuccess, showError } = useNotifications();
 
   useEffect(() => {
@@ -92,6 +95,12 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <NotificationContainer notifications={notifications} onClose={removeNotification} />
+      <QuickStatsModal
+        isOpen={showStatsModal}
+        onClose={() => setShowStatsModal(false)}
+        teamName={selectedTeam?.name || ""}
+        teamData={selectedTeam}
+      />
       {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -107,6 +116,13 @@ export default function Dashboard() {
                 <User className="h-5 w-5 text-gray-400" />
                 <span className="text-sm text-gray-700">{session.user?.name}</span>
               </div>
+              <Link
+                href="/waiver"
+                className="flex items-center space-x-1 text-sm text-gray-500 hover:text-gray-700"
+              >
+                <TrendingUp className="h-4 w-4" />
+                <span>Waiver Wire</span>
+              </Link>
               <Link
                 href="/settings"
                 className="flex items-center space-x-1 text-sm text-gray-500 hover:text-gray-700"
@@ -248,9 +264,15 @@ export default function Dashboard() {
                            >
                              Get AI Advice
                            </Link>
-                           <button className="bg-gradient-to-r from-purple-600 to-purple-700 text-white text-center py-2 px-3 rounded-lg text-xs font-medium hover:from-purple-700 hover:to-purple-800 transition-all duration-200">
-                             Quick Stats
-                           </button>
+                                                       <button 
+                              onClick={() => {
+                                setSelectedTeam(team);
+                                setShowStatsModal(true);
+                              }}
+                              className="bg-gradient-to-r from-purple-600 to-purple-700 text-white text-center py-2 px-3 rounded-lg text-xs font-medium hover:from-purple-700 hover:to-purple-800 transition-all duration-200"
+                            >
+                              Quick Stats
+                            </button>
                          </div>
                        </div>
                      </div>
