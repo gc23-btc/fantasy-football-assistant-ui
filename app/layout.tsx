@@ -1,20 +1,27 @@
-import '../styles/globals.css';
-import { ReactNode } from 'react';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import { SessionProvider } from '@/components/providers/SessionProvider'
 
-export const metadata = {
-  title: 'Fantasy Football Assistant',
-  description: 'AI-powered fantasy football dashboard',
-};
+const inter = Inter({ subsets: ['latin'] })
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export const metadata: Metadata = {
+  title: 'Fantasy Football MVP Manager',
+  description: 'Manage all your ESPN fantasy football teams in one place with AI-powered advice',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-gray-950 text-gray-100">
-        <ErrorBoundary>
+      <body className={inter.className}>
+        <SessionProvider>
           {children}
-        </ErrorBoundary>
+        </SessionProvider>
       </body>
     </html>
-  );
+  )
 }

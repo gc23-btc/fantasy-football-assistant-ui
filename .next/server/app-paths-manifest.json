@@ -1,4 +1,4 @@
 {
-  "/api/espn/league/route": "app/api/espn/league/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js"
 }

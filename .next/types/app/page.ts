@@ -1,4 +1,4 @@
-// File: /Users/cadeboss/fantasy-football-mvp/fantasy-football-assistant-ui/app/page.tsx
+// File: /Users/cadeboss/Desktop/fantasy football cursor /app/page.tsx
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

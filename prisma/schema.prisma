@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // User can have multiple fantasy teams
+  fantasyTeams FantasyTeam[]
+  
+  @@map("users")
+}
+
+model FantasyTeam {
+  id          String   @id @default(cuid())
+  name        String   // User's custom name for this team
+  leagueId    String   // ESPN League ID
+  teamId      String   // ESPN Team ID
+  leagueName  String?  // ESPN League Name
+  teamName    String?  // ESPN Team Name
+  season      Int      @default(2024)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Belongs to a user
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Team can have multiple lineup recommendations
+  lineupRecommendations LineupRecommendation[]
+  
+  @@unique([userId, leagueId, teamId, season])
+  @@map("fantasy_teams")
+}
+
+model LineupRecommendation {
+  id          String   @id @default(cuid())
+  week        Int
+  year        Int
+  riskLevel   String   // "conservative", "balanced", "aggressive"
+  advice      String   // AI-generated advice
+  createdAt   DateTime @default(now())
+  
+  // Belongs to a fantasy team
+  fantasyTeamId String
+  fantasyTeam   FantasyTeam @relation(fields: [fantasyTeamId], references: [id], onDelete: Cascade)
+  
+  @@unique([fantasyTeamId, week, year])
+  @@map("lineup_recommendations")
+}
