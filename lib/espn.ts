@@ -67,7 +67,7 @@ const BASE_URL =
 /**
  * Build headers with authentication cookies from environment variables.
  */
-function buildHeaders() {
+function buildHeaders(): Record<string, string> {
   const { ESPN_S2, ESPN_SWID } = process.env as Record<string, string | undefined>;
   if (!ESPN_S2 || !ESPN_SWID) {
     return {};

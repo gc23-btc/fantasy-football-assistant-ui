@@ -1,85 +1,233 @@
-## Fantasy Football Assistant – Web UI
+# Fantasy Football Assistant – Web UI
 
-This project is the front‑end for the Fantasy Football Assistant, built with **Next.js 14**, **TypeScript**, and **Tailwind CSS** using the App Router. It serves as the user interface layer for connecting to ESPN Fantasy Football data and AI‑powered advice.
+A comprehensive fantasy football management application built with **Next.js 14**, **TypeScript**, and **Tailwind CSS** using the App Router. Features AI-powered lineup advice, real-time data, and advanced analytics.
 
-### Local Development
+## 🚀 Features
 
-1. Install dependencies:
+### Core Features
+- **ESPN Integration** - Real-time league and scoreboard data
+- **AI-Powered Advice** - Lineup recommendations using Google Gemini
+- **Interactive Dashboard** - Modern, responsive UI with dark theme
+- **Player Search** - Autocomplete player search functionality
+- **Data Visualization** - Performance charts and analytics
 
+### Advanced Features
+- **Waiver Wire Recommendations** - Top available players
+- **Trade Analyzer** - Evaluate potential trades with AI insights
+- **Performance Charts** - Visualize player and team performance
+- **Mobile Optimization** - Responsive design for all devices
+- **Real-time Updates** - Live scoring and matchup data
+
+### Technical Features
+- **TypeScript** - Full type safety throughout the application
+- **Error Boundaries** - Graceful error handling
+- **Rate Limiting** - API protection and optimization
+- **Caching Strategy** - SWR for efficient data fetching
+- **Unit Testing** - Comprehensive test coverage
+- **CI/CD Pipeline** - Automated testing and deployment
+
+## 🚀 Quick Start
+
+### For End Users (No Setup Required!)
+This app is designed to work out of the box! Users just need to:
+1. Enter their League ID and Team ID from ESPN Fantasy Football
+2. Select the current week and risk preference
+3. Get AI-powered lineup advice instantly
+
+### For Developers
+
+#### Prerequisites
+- Node.js 18+ 
+- npm or pnpm
+
+#### Setup
+
+1. **Clone and install dependencies:**
    ```bash
+   git clone <repository-url>
+   cd fantasy-football-assistant-ui
    npm install
-   # or
-   pnpm install
    ```
 
-2. Run the development server:
+2. **Set up environment variables (optional):**
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local with your API keys
+   ```
 
+3. **Run the development server:**
    ```bash
    npm run dev
    ```
 
-3. Open `http://localhost:3000` in your browser. You should see the home page and can hit `/api/health` for a JSON health check.
+4. **Open** `http://localhost:3000` in your browser
 
-### Project Structure
-
-- **app/** – Next.js App Router directory. Contains pages, layouts, and API routes.
-- **app/api/** – Contains API route handlers. A `/health` route is provided for basic health checks.
-- **components/** – Place your React components here.
-- **lib/** – Server‑only modules (e.g. ESPN fetch helpers, to be implemented in later steps).
-- **styles/** – Global CSS and Tailwind directives.
-
-### Tailwind CSS
-
-Tailwind is configured via `tailwind.config.js` and used globally in `styles/globals.css`. You can customize the theme in the configuration as needed.
-
-### Next Steps
-This initial scaffolding has been expanded to include:
-
-* **ESPN fetch helpers** in `lib/espn.ts` for retrieving league and scoreboard data using the unofficial ESPN API.
-* **API routes** under `app/api/espn/` for `league` and `scoreboard`, which proxy ESPN data. These routes support query parameters and cache responses for 60 seconds.
-* **AI advice endpoint** under `app/api/lineup/advice` that calls the Gemini 1.5 model via `@google/generative-ai`. You must set a `GEMINI_API_KEY` in your environment for this to work.
-* **Interactive dashboard** in `app/page.tsx` that lets you input a league ID, team ID, week, and risk profile; it fetches league summaries, weekly scoreboards, and AI lineup advice.
-
-### Environment Variables
-
-Create a `.env.local` file at the project root (or set these on Vercel) with the following keys:
-
-```
-GEMINI_API_KEY=<your Google Gemini API key>
-ESPN_LEAGUE_ID=<default league id (optional)>
-ESPN_SEASON=2025
-ESPN_S2=<your espn_s2 cookie>
-ESPN_SWID=<your swid cookie>
-```
-
-These variables allow the server to authenticate to ESPN and call the Gemini API. Never commit real secrets to version control.
-
-### Testing API Routes
-
-You can test the API routes with `curl`:
+### Available Scripts
 
 ```bash
-# Health check
-curl http://localhost:3000/api/health
-
-# League summary (replace leagueId)
-curl "http://localhost:3000/api/espn/league?leagueId=123456"
-
-# Scoreboard for week 1
-curl "http://localhost:3000/api/espn/scoreboard?leagueId=123456&week=1"
-
-# Lineup advice (POST JSON with roster array)
-curl -X POST http://localhost:3000/api/lineup/advice \
-  -H "Content-Type: application/json" \
-  -d '{"roster": [{"id":123,"name":"Player Name","position":"WR","projected_points":12.3}], "scoring": {"ppr": true}}'
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run test         # Run tests
+npm run test:watch   # Run tests in watch mode
+npm run test:coverage # Run tests with coverage
 ```
 
-### Deployment
+## 📁 Project Structure
 
-To deploy on Vercel:
+```
+fantasy-football-assistant-ui/
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes
+│   │   ├── espn/          # ESPN API endpoints
+│   │   ├── lineup/        # AI advice endpoints
+│   │   └── health/        # Health check
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Main dashboard
+├── components/            # React components
+│   ├── data-display/      # Data visualization components
+│   ├── layout/           # Layout components
+│   └── ui/               # Reusable UI components
+├── hooks/                # Custom React hooks
+├── lib/                  # Utility libraries
+├── types/                # TypeScript type definitions
+├── __tests__/            # Test files
+└── styles/               # Global styles
+```
 
-1. Push this repository to GitHub or another Git provider.
-2. In Vercel, import the repository and set the environment variables listed above.
-3. Vercel will automatically detect the Next.js app and deploy it. The API routes and UI will be available on your Vercel domain.
+## 🔧 Configuration
 
-When you visit the site, enter your league and team IDs, and optionally the week and risk profile. The dashboard will display your league summary, current week matchups, and AI‑generated lineup advice.
+### Environment Variables (For Developers/Deployment)
+
+Create a `.env.local` file with the following variables:
+
+```env
+# Required: Google Gemini API for AI advice
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# Required: ESPN Fantasy Football API (Server-side only)
+ESPN_LEAGUE_ID=your_default_league_id_here
+ESPN_SEASON=2025
+ESPN_S2=your_espn_s2_cookie_here
+ESPN_SWID=your_swid_cookie_here
+
+# Optional: For future features
+# DATABASE_URL=your_database_url_here
+# REDIS_URL=your_redis_url_here
+```
+
+### Getting ESPN Credentials (For Developers)
+
+1. Log into ESPN Fantasy Football
+2. Open browser developer tools (F12)
+3. Go to Application/Storage → Cookies
+4. Copy `espn_s2` and `SWID` values
+
+### For End Users
+
+**No setup required!** Users just need to find their League ID and Team ID from ESPN Fantasy Football URLs:
+
+- **League ID**: Found in the URL when viewing your league: `fantasy.espn.com/football/league?leagueId=123456`
+- **Team ID**: Found in the URL when viewing your team: `fantasy.espn.com/football/team?leagueId=123456&teamId=1`
+
+## 🧪 Testing
+
+### Running Tests
+```bash
+# Run all tests
+npm run test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+### Test Coverage
+- Component unit tests
+- Hook testing
+- API route testing
+- Error boundary testing
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
+1. **Push to GitHub:**
+   ```bash
+   git add .
+   git commit -m "Ready for deployment"
+   git push origin main
+   ```
+
+2. **Deploy on Vercel:**
+   - Connect your GitHub repository
+   - Set environment variables in Vercel dashboard
+   - Deploy automatically on push to main
+
+### Manual Deployment
+
+```bash
+npm run build
+npm run start
+```
+
+## 📊 API Endpoints
+
+### ESPN Data
+```bash
+# League information
+GET /api/espn/league?leagueId=123456
+
+# Weekly scoreboard
+GET /api/espn/scoreboard?leagueId=123456&week=1
+```
+
+### AI Advice
+```bash
+# Lineup recommendations
+POST /api/lineup/advice
+Content-Type: application/json
+
+{
+  "roster": [...],
+  "opponent": [...],
+  "scoring": {...},
+  "risk": "balanced"
+}
+```
+
+### Health Check
+```bash
+GET /api/health
+```
+
+## 🔒 Security & Performance
+
+- **Rate Limiting** - API protection against abuse
+- **Error Boundaries** - Graceful error handling
+- **Type Safety** - Full TypeScript coverage
+- **Caching** - SWR for efficient data fetching
+- **Mobile Optimization** - Responsive design
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+For support, please open an issue on GitHub or contact the development team.
+
+---
+
+**Built with ❤️ for fantasy football enthusiasts**
