@@ -124,6 +124,13 @@ export default function Dashboard() {
                 <span>Waiver Wire</span>
               </Link>
               <Link
+                href="/stats"
+                className="flex items-center space-x-1 text-sm text-gray-500 hover:text-gray-700"
+              >
+                <Trophy className="h-4 w-4" />
+                <span>Stats</span>
+              </Link>
+              <Link
                 href="/settings"
                 className="flex items-center space-x-1 text-sm text-gray-500 hover:text-gray-700"
               >
@@ -258,21 +265,44 @@ export default function Dashboard() {
                            View Team Details
                          </Link>
                          <div className="grid grid-cols-2 gap-2">
-                           <Link
-                             href={`/teams/${team.id}/advice`}
+                           <button
+                             onClick={async () => {
+                               try {
+                                 const response = await fetch('/api/advice', {
+                                   method: 'POST',
+                                   headers: { 'Content-Type': 'application/json' },
+                                   body: JSON.stringify({
+                                     leagueId: Number(team.leagueId),
+                                     season: team.season,
+                                     teamId: Number(team.teamId),
+                                     week: 4
+                                   })
+                                 });
+                                 
+                                 if (response.ok) {
+                                   const advice = await response.json();
+                                   showSuccess('AI Advice Generated', 'Check the console for detailed recommendations');
+                                   console.log('AI Advice:', advice);
+                                 } else {
+                                   showError('Error', 'Failed to get AI advice');
+                                 }
+                               } catch (error) {
+                                 showError('Error', 'Failed to get AI advice');
+                               }
+                             }}
                              className="bg-gradient-to-r from-green-600 to-green-700 text-white text-center py-2 px-3 rounded-lg text-xs font-medium hover:from-green-700 hover:to-green-800 transition-all duration-200"
                            >
                              Get AI Advice
-                           </Link>
-                                                       <button 
-                              onClick={() => {
-                                setSelectedTeam(team);
-                                setShowStatsModal(true);
-                              }}
-                              className="bg-gradient-to-r from-purple-600 to-purple-700 text-white text-center py-2 px-3 rounded-lg text-xs font-medium hover:from-purple-700 hover:to-purple-800 transition-all duration-200"
-                            >
-                              Quick Stats
-                            </button>
+                           </button>
+                           <button 
+                             onClick={() => {
+                               setSelectedTeam(team);
+                               setShowStatsModal(true);
+                             }}
+                             className="bg-gradient-to-r from-purple-600 to-purple-700 text-white text-center py-2 px-3 rounded-lg text-xs font-medium hover:from-purple-700 hover:to-purple-800 transition-all duration-200"
+                           >
+                             Quick Stats
+                           </button>
                          </div>
                        </div>
                      </div>

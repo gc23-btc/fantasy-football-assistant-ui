@@ -14,24 +14,27 @@ import { getScoreboard } from '@/lib/espn';
 export const revalidate = 60; // cache scoreboard for 60 seconds
 
 export async function GET(req: Request) {
-  const url = new URL(req.url);
-  const searchParams = url.searchParams;
-  const leagueIdParam = searchParams.get('leagueId') || process.env.ESPN_LEAGUE_ID;
-  const seasonParam = searchParams.get('season') || process.env.ESPN_SEASON;
-  const weekParam = searchParams.get('week');
-  if (!leagueIdParam) {
-    return NextResponse.json({ error: 'Missing leagueId parameter' }, { status: 400 });
-  }
-  if (!weekParam) {
-    return NextResponse.json({ error: 'Missing week parameter' }, { status: 400 });
-  }
-  const leagueId = Number(leagueIdParam);
-  const season = seasonParam ? Number(seasonParam) : undefined;
-  const week = Number(weekParam);
   try {
-    const scoreboard = await getScoreboard({ leagueId, season: season ?? 2025, week });
-    return NextResponse.json(scoreboard);
-  } catch (err) {
-    return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+    const { searchParams } = new URL(req.url);
+    const leagueId = Number(searchParams.get('leagueId') || process.env.ESPN_LEAGUE_ID);
+    const season = Number(searchParams.get('season') || process.env.ESPN_SEASON);
+    const week = Number(searchParams.get('week'));
+    
+    if (!leagueId || !season) {
+      return NextResponse.json({ error: 'leagueId and season required' }, { status: 400 });
+    }
+    
+    if (!week) {
+      return NextResponse.json({ error: 'week parameter is required' }, { status: 400 });
+    }
+    
+    if (!process.env.ESPN_S2 || !process.env.ESPN_SWID) {
+      return NextResponse.json({ error: 'Missing ESPN_S2 / ESPN_SWID' }, { status: 401 });
+    }
+    
+    const data = await getScoreboard({ leagueId, season, week });
+    return NextResponse.json(data);
+  } catch (err: any) {
+    return NextResponse.json({ error: err?.message ?? 'Unknown error' }, { status: 500 });
   }
 }

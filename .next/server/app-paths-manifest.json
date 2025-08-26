@@ -1,1 +1,21 @@
-{}
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/auth/register/route": "app/api/auth/register/route.js",
+  "/api/advice/route": "app/api/advice/route.js",
+  "/api/lineup/advice/route": "app/api/lineup/advice/route.js",
+  "/api/health/route": "app/api/health/route.js",
+  "/api/teams/[id]/route": "app/api/teams/[id]/route.js",
+  "/api/teams/route": "app/api/teams/route.js",
+  "/api/waivers/route": "app/api/waivers/route.js",
+  "/page": "app/page.js",
+  "/auth/signin/page": "app/auth/signin/page.js",
+  "/auth/signup/page": "app/auth/signup/page.js",
+  "/settings/page": "app/settings/page.js",
+  "/stats/page": "app/stats/page.js",
+  "/teams/[teamId]/page": "app/teams/[teamId]/page.js",
+  "/waiver/page": "app/waiver/page.js",
+  "/teams/add/page": "app/teams/add/page.js",
+  "/api/espn/scoreboard/route": "app/api/espn/scoreboard/route.js",
+  "/api/espn/league/route": "app/api/espn/league/route.js"
+}

@@ -1,15 +1,11 @@
 import { z } from 'zod';
 
-/*
+/**
  * ESPN Fantasy API client helpers.
- *
- * These helpers are server‑only and should not be executed on the client.
- * They rely on environment variables for authentication cookies.
+ * Server-only; relies on env cookies for auth.
  */
 
-// Define Zod schemas for parts of the ESPN API responses we care about.
-// The full response contains many fields; we only parse what we need.
-
+// ---------- Schemas ----------
 const PlayerSchema = z.object({
   id: z.number(),
   fullName: z.string(),
@@ -36,7 +32,7 @@ const LeagueSchema = z.object({
   teams: z.array(TeamSchema),
 });
 
-// Scoreboard/matchup schema
+// Scoreboard/matchups
 const MatchupTeamSchema = z.object({
   teamId: z.number(),
   totalPoints: z.number().optional(),
@@ -55,33 +51,28 @@ const ScoreboardSchema = z.object({
 export type League = z.infer<typeof LeagueSchema>;
 export type Scoreboard = z.infer<typeof ScoreboardSchema>;
 
+// ---------- Config ----------
 interface Credentials {
   leagueId: number;
   season: number;
-  week?: number;
+  week?: number; // must be optional
 }
 
-const BASE_URL =
-  'https://fantasy.espn.com/apis/v3/games/ffl/seasons';
+// ESPN changed the domain. Use lm-api-reads.
+const BASE_URL = 'https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons';
 
-/**
- * Build headers with authentication cookies from environment variables.
- */
+// ---------- Helpers ----------
 function buildHeaders(): Record<string, string> {
   const { ESPN_S2, ESPN_SWID } = process.env as Record<string, string | undefined>;
-  if (!ESPN_S2 || !ESPN_SWID) {
-    return {};
-  }
-  return {
-    Cookie: `espn_s2=${ESPN_S2}; SWID=${ESPN_SWID}`,
-  };
+  if (!ESPN_S2 || !ESPN_SWID) return {};
+  return { Cookie: `espn_s2=${ESPN_S2}; SWID=${ESPN_SWID}` };
 }
 
 async function fetchJson(url: string) {
   const headers = buildHeaders();
   const res = await fetch(url, { headers });
   if (res.status === 401 || res.status === 403) {
-    throw new Error('Unauthorized: check ESPN credentials');
+    throw new Error('Unauthorized: check ESPN cookies (ESPN_S2, ESPN_SWID)');
   }
   if (!res.ok) {
     throw new Error(`ESPN API error: ${res.status}`);
@@ -89,37 +80,25 @@ async function fetchJson(url: string) {
   return res.json();
 }
 
-/**
- * Fetch league details including teams and rosters.
- */
+// ---------- API ----------
 export async function getLeague({ leagueId, season }: Credentials): Promise<League> {
-  const url = `${BASE_URL}/${season}/segments/0/leagues/${leagueId}?view=mTeam&view=mRoster&view=mMatchup`;
+  const url =
+    `${BASE_URL}/${season}/segments/0/leagues/${leagueId}` +
+    `?view=mTeam&view=mRoster&view=mMatchup`;
   const data = await fetchJson(url);
   return LeagueSchema.parse(data);
 }
 
-/**
- * Fetch scoreboard (matchups) for a specific week.
- */
 export async function getScoreboard({ leagueId, season, week }: Credentials): Promise<Scoreboard> {
-  if (!week) {
-    throw new Error('Week parameter is required for scoreboard');
-  }
-  const url = `${BASE_URL}/${season}/segments/0/leagues/${leagueId}?view=mMatchupScore&scoringPeriodId=${week}`;
+  if (!week) throw new Error('Week parameter is required for scoreboard');
+  const url =
+    `${BASE_URL}/${season}/segments/0/leagues/${leagueId}` +
+    `?view=mMatchupScore&scoringPeriodId=${week}`;
   const data = await fetchJson(url);
-  // The scoreboard information is nested in data.schedule; we need to transform it to match ScoreboardSchema
-  const matchups = (data.schedule || []).map((m: any) => {
-    return {
-      id: m.id,
-      home: {
-        teamId: m.home.teamId,
-        totalPoints: m.home.totalPoints,
-      },
-      away: {
-        teamId: m.away.teamId,
-        totalPoints: m.away.totalPoints,
-      },
-    };
-  });
+  const matchups = (data.schedule ?? []).map((m: any) => ({
+    id: m.id,
+    home: { teamId: m.home.teamId, totalPoints: m.home.totalPoints },
+    away: { teamId: m.away.teamId, totalPoints: m.away.totalPoints },
+  }));
   return ScoreboardSchema.parse({ matchups });
 }
