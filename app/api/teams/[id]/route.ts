@@ -140,3 +140,8 @@ export async function DELETE(
     );
   }
 }
+
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
