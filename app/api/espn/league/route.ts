@@ -46,3 +46,8 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: err?.message ?? 'Unknown error' }, { status: 500 });
   }
 }
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
