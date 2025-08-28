@@ -43,8 +43,7 @@ interface Player {
 
 export default function TeamPage() {
   const params = useParams();
-  const teamId = Number(params.teamId);
-
+const teamId = Number(params?.teamId ?? 0);
   const { data: league, error: leagueError } = useSWR<League>(
     `/api/espn/league?leagueId=${process.env.NEXT_PUBLIC_ESPN_LEAGUE_ID || '123456'}&season=2024`,
     (url: string) => fetch(url).then(res => res.json())
